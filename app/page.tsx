@@ -186,8 +186,15 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
       <section className="relative w-full flex flex-col items-center justify-center px-6 pt-20 pb-16">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1510] via-[#0a0a0a] to-[#0a0a0a]" />
         <div className="relative z-10 flex flex-col items-center text-center max-w-lg">
-          <div className="w-28 h-28 rounded-full border-2 border-gold flex items-center justify-center mb-6 bg-[#1a1510]">
-            <span className="text-4xl font-serif text-gold font-bold">CM</span>
+          <div className="w-32 h-32 rounded-full border-2 border-gold overflow-hidden mb-6">
+            <Image
+              src="/camila.jpeg"
+              alt="Camila Makeup"
+              width={128}
+              height={128}
+              className="w-full h-full object-cover"
+              priority
+            />
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl leading-tight tracking-tight text-foreground mb-2">
             Maquiagem profissional para o dia{" "}
