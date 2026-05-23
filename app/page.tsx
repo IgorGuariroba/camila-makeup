@@ -9,7 +9,7 @@ const WHATSAPP_DIRECT_MSG =
   "Olá Camila! Vim pelo seu site e gostaria de saber mais sobre seus serviços de maquiagem 💄";
 const INSTAGRAM_URL = "https://www.instagram.com/camilamakeup.guari/";
 const TIKTOK_URL = "https://www.tiktok.com/@camila.guari1";
-const CALCOM_URL = "#orcamento";
+
 
 const SERVICES = [
   {
@@ -101,22 +101,6 @@ function TikTokIcon({ className }: { className?: string }) {
   );
 }
 
-function CalendarIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-  );
-}
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -299,23 +283,14 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
             Pronta para se sentir ainda mais linda?
           </h2>
           <p className="text-nude-dark text-sm mb-6">
-            Agende sua sessão de maquiagem e garanta seu horário
+            Solicite seu orçamento e garanta seu horário
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="#orcamento"
-              className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold px-8 py-3.5 rounded-full transition-all duration-300 hover:scale-105"
-            >
-              Solicitar Orçamento
-            </a>
-            <a
-              href={CALCOM_URL}
-              className="flex items-center justify-center gap-2 border border-gold/40 text-gold hover:bg-gold/10 font-medium px-8 py-3.5 rounded-full transition-all duration-300"
-            >
-              <CalendarIcon className="w-5 h-5" />
-              Agendar Horário
-            </a>
-          </div>
+          <a
+            href="#orcamento"
+            className="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold px-8 py-3.5 rounded-full transition-all duration-300 hover:scale-105"
+          >
+            Solicitar Orçamento
+          </a>
         </div>
       </section>
 
