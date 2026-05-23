@@ -9,7 +9,7 @@ const WHATSAPP_DIRECT_MSG =
   "Olá Camila! Vim pelo seu site e gostaria de saber mais sobre seus serviços de maquiagem 💄";
 const INSTAGRAM_URL = "https://www.instagram.com/camilamakeup.guari/";
 const TIKTOK_URL = "https://www.tiktok.com/@camila.guari1";
-const CALCOM_URL = "#agendar";
+const CALCOM_URL = "#orcamento";
 
 const SERVICES = [
   {
