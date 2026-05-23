@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Gem, Sparkles, Brush, Crown } from "lucide-react";
 
 const WHATSAPP_NUMBER = "5511986733463";
 const WHATSAPP_DIRECT_MSG =
@@ -15,25 +16,25 @@ const SERVICES = [
     name: "Maquiagem para Noiva",
     description:
       "Make exclusiva para o dia mais especial. Produtos de alta durabilidade para você brilhar do altar à pista.",
-    icon: "💍",
+    icon: Gem,
   },
   {
     name: "Festa & Formatura",
     description:
       "Produção completa para arrasar na festa. Make que dura a noite toda com acabamento impecável.",
-    icon: "✨",
+    icon: Sparkles,
   },
   {
     name: "Maquiagem Social",
     description:
-      "Para eventos, ensaios fotográficos e ocasiões especiais. Realce sua beleza natural com elegância.",
-    icon: "💄",
+      "Look perfeito para cada momento — do ensaio fotográfico ao evento corporativo. Técnicas que valorizam seus traços com sofisticação.",
+    icon: Brush,
   },
   {
     name: "Pacote Noiva + Madrinhas",
     description:
-      "Pacote especial para noiva e madrinhas. Harmonia visual para o grande dia com desconto exclusivo.",
-    icon: "👑",
+      "Atendimento personalizado para noiva e madrinhas. Harmonia visual para o grande dia com produção exclusiva para todo o grupo.",
+    icon: Crown,
   },
 ];
 
@@ -126,7 +127,6 @@ function StarIcon({ className }: { className?: string }) {
 }
 
 export default function Home() {
-  const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     telefone: "",
@@ -170,7 +170,6 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
     );
 
     setSending(false);
-    setFormOpen(false);
     setFormData({
       nome: "",
       telefone: "",
@@ -204,12 +203,12 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
             Maquiadora Profissional · Suzano/SP · Atendimento a domicílio
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-8 w-full sm:w-auto">
-            <button
-              onClick={() => setFormOpen(true)}
+            <a
+              href="#orcamento"
               className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold px-8 py-3.5 rounded-full transition-all duration-300 hover:scale-105"
             >
               Solicitar Orçamento
-            </button>
+            </a>
             <a
               href={whatsappDirectUrl}
               target="_blank"
@@ -303,12 +302,12 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
             Agende sua sessão de maquiagem e garanta seu horário
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => setFormOpen(true)}
+            <a
+              href="#orcamento"
               className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold px-8 py-3.5 rounded-full transition-all duration-300 hover:scale-105"
             >
               Solicitar Orçamento
-            </button>
+            </a>
             <a
               href={CALCOM_URL}
               className="flex items-center justify-center gap-2 border border-gold/40 text-gold hover:bg-gold/10 font-medium px-8 py-3.5 rounded-full transition-all duration-300"
@@ -331,7 +330,7 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
               key={i}
               className="bg-[#141210] border border-gold/10 rounded-2xl p-6 hover:border-gold/30 transition-colors duration-300"
             >
-              <span className="text-2xl mb-3 block">{s.icon}</span>
+              <s.icon className="w-7 h-7 mb-3 text-gold" />
               <h3 className="text-foreground font-semibold text-base mb-2">
                 {s.name}
               </h3>
@@ -414,117 +413,105 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
         </p>
       </footer>
 
-      {/* Quote Form Modal */}
-      {formOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setFormOpen(false);
-          }}
-        >
-          <div className="bg-[#141210] border border-gold/20 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] overflow-y-auto p-6 sm:p-8 animate-fade-in-up">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-serif text-xl text-foreground">
-                Solicitar Orçamento
-              </h3>
-              <button
-                onClick={() => setFormOpen(false)}
-                className="text-nude-dark hover:text-foreground text-2xl leading-none"
-              >
-                ×
-              </button>
+      {/* Quote Form */}
+      <section id="orcamento" className="w-full max-w-2xl px-6 py-16 scroll-mt-8">
+        <div className="bg-[#141210] border border-gold/20 rounded-2xl p-6 sm:p-8">
+          <h2 className="font-serif text-2xl text-center text-foreground mb-2">
+            Solicitar Orçamento
+          </h2>
+          <p className="text-nude-dark text-center text-sm mb-8">
+            Preencha seus dados e entraremos em contato pelo WhatsApp
+          </p>
+          <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 max-w-md mx-auto">
+            <div>
+              <label className="text-sm text-nude-dark mb-1 block">
+                Nome
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.nome}
+                onChange={(e) =>
+                  setFormData({ ...formData, nome: e.target.value })
+                }
+                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                placeholder="Seu nome"
+              />
             </div>
-            <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="text-sm text-nude-dark mb-1 block">
-                  Nome
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.nome}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nome: e.target.value })
-                  }
-                  className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
-                  placeholder="Seu nome"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-nude-dark mb-1 block">
-                  Telefone
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={formData.telefone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, telefone: e.target.value })
-                  }
-                  className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-nude-dark mb-1 block">
-                  Serviço
-                </label>
-                <select
-                  required
-                  value={formData.servico}
-                  onChange={(e) =>
-                    setFormData({ ...formData, servico: e.target.value })
-                  }
-                  className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors appearance-none"
-                >
-                  <option value="">Selecione o serviço</option>
-                  {SERVICES.map((s, i) => (
-                    <option key={i} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm text-nude-dark mb-1 block">
-                  Data desejada
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.data}
-                  onChange={(e) =>
-                    setFormData({ ...formData, data: e.target.value })
-                  }
-                  className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-nude-dark mb-1 block">
-                  Observações{" "}
-                  <span className="text-nude-dark/50">(opcional)</span>
-                </label>
-                <textarea
-                  value={formData.observacoes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, observacoes: e.target.value })
-                  }
-                  className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors resize-none h-24"
-                  placeholder="Detalhes sobre o evento, local, etc."
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={sending}
-                className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold py-3.5 rounded-full transition-all duration-300 hover:scale-105 mt-2"
+            <div>
+              <label className="text-sm text-nude-dark mb-1 block">
+                Telefone
+              </label>
+              <input
+                type="tel"
+                required
+                value={formData.telefone}
+                onChange={(e) =>
+                  setFormData({ ...formData, telefone: e.target.value })
+                }
+                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                placeholder="(11) 99999-9999"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-nude-dark mb-1 block">
+                Serviço
+              </label>
+              <select
+                required
+                value={formData.servico}
+                onChange={(e) =>
+                  setFormData({ ...formData, servico: e.target.value })
+                }
+                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors appearance-none"
               >
-                <WhatsAppIcon className="w-5 h-5" />
-                {sending ? "Enviando..." : "Enviar pelo WhatsApp"}
-              </button>
-            </form>
-          </div>
+                <option value="">Selecione o serviço</option>
+                {SERVICES.map((s, i) => (
+                  <option key={i} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm text-nude-dark mb-1 block">
+                Data desejada
+              </label>
+              <input
+                type="date"
+                required
+                value={formData.data}
+                onChange={(e) =>
+                  setFormData({ ...formData, data: e.target.value })
+                }
+                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-nude-dark mb-1 block">
+                Observações{" "}
+                <span className="text-nude-dark/50">(opcional)</span>
+              </label>
+              <textarea
+                value={formData.observacoes}
+                onChange={(e) =>
+                  setFormData({ ...formData, observacoes: e.target.value })
+                }
+                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors resize-none h-24"
+                placeholder="Detalhes sobre o evento, local, etc."
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={sending}
+              className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold py-3.5 rounded-full transition-all duration-300 hover:scale-105 mt-2"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              {sending ? "Enviando..." : "Enviar pelo WhatsApp"}
+            </button>
+          </form>
         </div>
-      )}
+      </section>
     </div>
   );
 }
