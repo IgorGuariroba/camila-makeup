@@ -13,11 +13,14 @@
 // 8. Executar como: "Eu"
 // 9. Quem tem acesso: "Qualquer pessoa"
 // 10. Copie a URL gerada
-// 11. No site, adicione no <head> do layout.tsx:
-//     <meta name="sheets-url" content="SUA_URL_AQUI" />
+// 11. Cole a URL no arquivo .env.local do projeto:
+//     GOOGLE_SHEETS_URL=https://script.google.com/macros/s/SEU_ID/exec
 //
-// Pronto! Os leads serão salvos automaticamente na planilha.
+// Pronto! Os leads serão salvos automaticamente na planilha
+// e uma notificação será enviada por email.
 // =============================================================
+
+var EMAIL_NOTIFICACAO = "camilamakeupbr@gmail.com";
 
 function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -32,7 +35,23 @@ function doPost(e) {
     data.observacoes || "",
   ]);
 
+  enviarNotificacao(data);
+
   return ContentService.createTextOutput(
     JSON.stringify({ status: "ok" })
   ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function enviarNotificacao(data) {
+  var assunto = "💄 Novo Lead — " + (data.nome || "Sem nome");
+  var corpo =
+    "Novo contato recebido!\n\n" +
+    "Nome: " + (data.nome || "-") + "\n" +
+    "Telefone: " + (data.telefone || "-") + "\n" +
+    "Serviço: " + (data.servico || "-") + "\n" +
+    "Data desejada: " + (data.data || "-") + "\n" +
+    "Observações: " + (data.observacoes || "-") + "\n\n" +
+    "Responda o mais rápido possível! 🚀";
+
+  MailApp.sendEmail(EMAIL_NOTIFICACAO, assunto, corpo);
 }

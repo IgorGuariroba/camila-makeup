@@ -108,6 +108,19 @@ function StarIcon({ className }: { className?: string }) {
   );
 }
 
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function getTomorrow(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+}
+
 export default function Home() {
   const [formData, setFormData] = useState({
     nome: "",
@@ -116,13 +129,23 @@ export default function Home() {
     data: "",
     observacoes: "",
   });
-  const [sending, setSending] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const whatsappDirectUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DIRECT_MSG)}`;
 
+  function validateForm(): boolean {
+    const errors: Record<string, string> = {};
+    if (formData.nome.trim().length < 2) errors.nome = "Nome deve ter pelo menos 2 caracteres";
+    const phoneDigits = formData.telefone.replace(/\D/g, "");
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) errors.telefone = "Telefone inválido";
+    if (formData.data < getTomorrow()) errors.data = "Escolha uma data futura";
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSending(true);
+    if (!validateForm()) return;
 
     const msg = `Olá Camila! Vim pelo seu site e gostaria de um orçamento:
 
@@ -131,27 +154,17 @@ Serviço: ${formData.servico}
 Data desejada: ${formData.data}
 Observações: ${formData.observacoes || "Nenhuma"}`;
 
-    const sheetsUrl = (
-      document.querySelector('meta[name="sheets-url"]') as HTMLMetaElement
-    )?.content;
-    if (sheetsUrl) {
-      fetch(sheetsUrl, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          timestamp: new Date().toISOString(),
-        }),
-      }).catch(() => {});
-    }
+    fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    }).catch(() => {});
 
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,
       "_blank"
     );
 
-    setSending(false);
     setFormData({
       nome: "",
       telefone: "",
@@ -403,13 +416,16 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
               <input
                 type="text"
                 required
+                minLength={2}
                 value={formData.nome}
-                onChange={(e) =>
-                  setFormData({ ...formData, nome: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, nome: e.target.value });
+                  setFormErrors({ ...formErrors, nome: "" });
+                }}
                 className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
                 placeholder="Seu nome"
               />
+              {formErrors.nome && <p className="text-red-400 text-xs mt-1">{formErrors.nome}</p>}
             </div>
             <div>
               <label className="text-sm text-nude-dark mb-1 block">
@@ -419,12 +435,15 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
                 type="tel"
                 required
                 value={formData.telefone}
-                onChange={(e) =>
-                  setFormData({ ...formData, telefone: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, telefone: formatPhone(e.target.value) });
+                  setFormErrors({ ...formErrors, telefone: "" });
+                }}
+                maxLength={15}
                 className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
                 placeholder="(11) 99999-9999"
               />
+              {formErrors.telefone && <p className="text-red-400 text-xs mt-1">{formErrors.telefone}</p>}
             </div>
             <div>
               <label className="text-sm text-nude-dark mb-1 block">
@@ -453,12 +472,15 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
               <input
                 type="date"
                 required
+                min={getTomorrow()}
                 value={formData.data}
-                onChange={(e) =>
-                  setFormData({ ...formData, data: e.target.value })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, data: e.target.value });
+                  setFormErrors({ ...formErrors, data: "" });
+                }}
                 className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
               />
+              {formErrors.data && <p className="text-red-400 text-xs mt-1">{formErrors.data}</p>}
             </div>
             <div>
               <label className="text-sm text-nude-dark mb-1 block">
@@ -476,11 +498,11 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
             </div>
             <button
               type="submit"
-              disabled={sending}
+
               className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-[#0a0a0a] font-semibold py-3.5 rounded-full transition-all duration-300 hover:scale-105 mt-2"
             >
               <WhatsAppIcon className="w-5 h-5" />
-              {sending ? "Enviando..." : "Enviar pelo WhatsApp"}
+              Enviar pelo WhatsApp
             </button>
           </form>
         </div>
