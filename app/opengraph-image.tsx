@@ -1,10 +1,17 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export const alt = "Camila Makeup - Maquiadora Profissional em Suzano/SP";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
+  const photoData = await readFile(
+    join(process.cwd(), "public", "camila.jpeg")
+  );
+  const photoBase64 = `data:image/jpeg;base64,${photoData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -33,23 +40,17 @@ export default async function Image() {
           }}
         />
 
-        <div
+        <img
+          src={photoBase64}
+          width={120}
+          height={120}
           style={{
-            width: 90,
-            height: 90,
             borderRadius: "50%",
-            border: "2px solid #c9a96e",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            border: "3px solid #c9a96e",
             marginBottom: 24,
-            background: "rgba(26, 21, 16, 0.8)",
+            objectFit: "cover",
           }}
-        >
-          <span style={{ fontSize: 36, color: "#c9a96e", fontWeight: 700 }}>
-            CM
-          </span>
-        </div>
+        />
 
         <div
           style={{
