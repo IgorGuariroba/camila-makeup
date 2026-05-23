@@ -40,12 +40,10 @@ const SERVICES = [
 
 const PORTFOLIO_IMAGES = [
   { src: "/portfolio/trabalho-1.jpg", alt: "Maquiagem para festa" },
-  { src: "/portfolio/trabalho-2.jpg", alt: "Maquiagem elegante" },
   { src: "/portfolio/trabalho-3.jpg", alt: "Maquiagem para evento" },
   { src: "/portfolio/trabalho-4.webp", alt: "Maquiagem para formatura" },
   { src: "/portfolio/trabalho-5.jpg", alt: "Maquiagem social" },
   { src: "/portfolio/trabalho-6.jpg", alt: "Maquiagem profissional" },
-  { src: "/portfolio/trabalho-7.webp", alt: "Maquiagem natural" },
   { src: "/portfolio/trabalho-8.webp", alt: "Maquiagem sofisticada" },
 ];
 
