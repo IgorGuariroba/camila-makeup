@@ -24,6 +24,13 @@
 .DS_Store
 *.pem
 
+# IDE
+.idea/
+
+# downloads
+downloads_posts/
+downloads_stories/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

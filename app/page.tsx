@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Gem, Sparkles, Brush, Crown } from "lucide-react";
+import DatePicker from "./components/DatePicker";
 
 const WHATSAPP_NUMBER = "5511986733463";
 const WHATSAPP_DIRECT_MSG =
@@ -469,18 +470,15 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
               <label className="text-sm text-nude-dark mb-1 block">
                 Data desejada
               </label>
-              <input
-                type="date"
-                required
-                min={getTomorrow()}
+              <DatePicker
                 value={formData.data}
-                onChange={(e) => {
-                  setFormData({ ...formData, data: e.target.value });
+                onChange={(val) => {
+                  setFormData({ ...formData, data: val });
                   setFormErrors({ ...formErrors, data: "" });
                 }}
-                className="w-full bg-[#0a0a0a] border border-gold/20 rounded-xl px-4 py-3 text-foreground text-sm focus:outline-none focus:border-gold transition-colors"
+                min={getTomorrow()}
+                error={formErrors.data}
               />
-              {formErrors.data && <p className="text-red-400 text-xs mt-1">{formErrors.data}</p>}
             </div>
             <div>
               <label className="text-sm text-nude-dark mb-1 block">
