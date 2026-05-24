@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Gem, Sparkles, Brush, Crown } from "lucide-react";
 import DatePicker from "./components/DatePicker";
+import { trackFormSubmit, trackWhatsAppClick, getStoredUtm, storeUtmParams } from "@/lib/tracking";
 
 const WHATSAPP_NUMBER = "5511986733463";
 const WHATSAPP_DIRECT_MSG =
@@ -132,6 +133,10 @@ export default function Home() {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    storeUtmParams();
+  }, []);
+
   const whatsappDirectUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DIRECT_MSG)}`;
 
   function validateForm(): boolean {
@@ -155,11 +160,14 @@ Serviço: ${formData.servico}
 Data desejada: ${formData.data}
 Observações: ${formData.observacoes || "Nenhuma"}`;
 
+    const utm = getStoredUtm();
     fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, ...utm }),
     }).catch(() => {});
+
+    trackFormSubmit(formData.servico);
 
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,
@@ -209,6 +217,7 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
               href={whatsappDirectUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick("hero")}
               className="flex items-center justify-center gap-2 border border-gold/40 text-gold hover:bg-gold/10 font-medium px-8 py-3.5 rounded-full transition-all duration-300"
             >
               <WhatsAppIcon className="w-5 h-5" />
@@ -362,6 +371,7 @@ Observações: ${formData.observacoes || "Nenhuma"}`;
           href={whatsappDirectUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick("cta")}
           className="flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20bd5a] text-white font-semibold py-4 rounded-full transition-all duration-300 hover:scale-105 w-full"
         >
           <WhatsAppIcon className="w-6 h-6" />

@@ -19,6 +19,9 @@ export async function POST(request: NextRequest) {
     servico: data.servico || "",
     data: data.data || "",
     observacoes: data.observacoes || "",
+    utm_source: data.utm_source || "",
+    utm_medium: data.utm_medium || "",
+    utm_campaign: data.utm_campaign || "",
   };
 
   if (!GOOGLE_SHEETS_URL) {

@@ -70,6 +70,27 @@ export async function getTrafficSources() {
   );
 }
 
+export async function getPaidVsOrganic() {
+  const response = await runReport({
+    dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+    dimensions: [{ name: "sessionMedium" }],
+    metrics: [{ name: "sessions" }],
+  });
+
+  let paid = 0;
+  let organic = 0;
+  response.rows?.forEach((row) => {
+    const medium = row.dimensionValues?.[0]?.value || "";
+    const count = Number(row.metricValues?.[0]?.value || 0);
+    if (["cpc", "cpm", "paid", "ppc", "retargeting"].includes(medium)) {
+      paid += count;
+    } else {
+      organic += count;
+    }
+  });
+  return { paid, organic };
+}
+
 export async function getTopPages() {
   const response = await runReport({
     dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],

@@ -6,12 +6,14 @@ import {
   getDeviceBreakdown,
   getAvgSessionDuration,
   getNewVsReturning,
+  getPaidVsOrganic,
 } from "@/lib/ga4";
 import { getLeadCount } from "@/lib/sheets";
 import MetricCard from "./components/MetricCard";
 import TrafficSources from "./components/TrafficSources";
 import DeviceBreakdown from "./components/DeviceBreakdown";
 import NewVsReturning from "./components/NewVsReturning";
+import PaidVsOrganic from "./components/PaidVsOrganic";
 import SignOutButton from "./components/SignOutButton";
 
 export const revalidate = 300;
@@ -25,16 +27,18 @@ export default async function AdminDashboard() {
     devices,
     avgDuration,
     newVsReturning,
+    paidVsOrganic,
     leadCount;
 
   try {
-    [visitors, sources, devices, avgDuration, newVsReturning, leadCount] =
+    [visitors, sources, devices, avgDuration, newVsReturning, paidVsOrganic, leadCount] =
       await Promise.all([
         getVisitorCounts(),
         getTrafficSources(),
         getDeviceBreakdown(),
         getAvgSessionDuration(),
         getNewVsReturning(),
+        getPaidVsOrganic(),
         getLeadCount(),
       ]);
   } catch {
@@ -88,15 +92,36 @@ export default async function AdminDashboard() {
           sublabel="Visitantes → Leads"
         />
         <MetricCard
-          label="Dispositivo Principal"
+          label="Dispositivo"
           value={devices[0]?.device === "mobile" ? "Celular" : "Desktop"}
           sublabel={`${Math.round((devices[0]?.sessions / devices.reduce((s, d) => s + d.sessions, 0) || 1) * 100)}% dos acessos`}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <TrafficSources data={sources} />
+        <PaidVsOrganic data={paidVsOrganic} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NewVsReturning data={newVsReturning} />
+        <div className="bg-[#141210] border border-gold/10 rounded-xl p-5">
+          <h3 className="text-foreground font-serif text-lg mb-2">Pixels Ativos</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-nude-dark">Google Analytics</span>
+              <span className="text-green-400">Ativo</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-nude-dark">Google Ads</span>
+              <span className="text-green-400">Ativo</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-nude-dark">Meta Pixel (Instagram)</span>
+              <span className="text-nude-dark/40">Pendente</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

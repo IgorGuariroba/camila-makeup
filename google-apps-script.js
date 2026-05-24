@@ -5,7 +5,7 @@
 // 1. Abra o Google Sheets: https://sheets.google.com
 // 2. Crie uma nova planilha chamada "Leads Camila Makeup"
 // 3. Na primeira linha, coloque os cabeçalhos:
-//    A1: Data/Hora | B1: Nome | C1: Telefone | D1: Serviço | E1: Data Desejada | F1: Observações
+//    A1: Data/Hora | B1: Nome | C1: Telefone | D1: Serviço | E1: Data Desejada | F1: Observações | G1: Origem | H1: Mídia | I1: Campanha
 // 4. Vá em Extensões > Apps Script
 // 5. Apague o conteúdo e cole este código abaixo
 // 6. Clique em "Implantar" > "Nova implantação"
@@ -33,9 +33,17 @@ function doPost(e) {
     data.servico || "",
     data.data || "",
     data.observacoes || "",
+    data.utm_source || "direto",
+    data.utm_medium || "organico",
+    data.utm_campaign || "",
   ]);
 
-  enviarNotificacao(data);
+  try {
+    enviarNotificacao(data);
+    sheet.getRange(sheet.getLastRow(), 10).setValue("Email enviado");
+  } catch (erro) {
+    sheet.getRange(sheet.getLastRow(), 10).setValue("Erro email: " + erro.message);
+  }
 
   return ContentService.createTextOutput(
     JSON.stringify({ status: "ok" })
