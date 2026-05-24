@@ -120,33 +120,33 @@ export async function getTopCities() {
   );
 }
 
-export async function getPeakHours() {
+export async function getAvgSessionDuration() {
   const response = await runReport({
     dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-    dimensions: [{ name: "hour" }],
-    metrics: [{ name: "sessions" }],
+    metrics: [{ name: "averageSessionDuration" }],
   });
 
-  const hourMap = new Map<number, number>();
-  for (let i = 0; i < 24; i++) hourMap.set(i, 0);
-
-  response.rows?.forEach((row) => {
-    const hour = Number(row.dimensionValues?.[0]?.value || 0);
-    hourMap.set(hour, Number(row.metricValues?.[0]?.value || 0));
-  });
-
-  return Array.from(hourMap.entries()).map(([hour, sessions]) => ({
-    hour,
-    sessions,
-  }));
+  const seconds = Number(
+    response.rows?.[0]?.metricValues?.[0]?.value || 0
+  );
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.round(seconds % 60);
+  return `${mins}m${secs.toString().padStart(2, "0")}s`;
 }
 
-export async function getBounceRate() {
+export async function getNewVsReturning() {
   const response = await runReport({
     dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-    metrics: [{ name: "bounceRate" }],
+    dimensions: [{ name: "newVsReturning" }],
+    metrics: [{ name: "activeUsers" }],
   });
 
-  const rate = Number(response.rows?.[0]?.metricValues?.[0]?.value || 0);
-  return Math.round(rate * 100);
+  const result = { new: 0, returning: 0 };
+  response.rows?.forEach((row) => {
+    const type = row.dimensionValues?.[0]?.value || "";
+    const count = Number(row.metricValues?.[0]?.value || 0);
+    if (type === "new") result.new = count;
+    else if (type === "returning") result.returning = count;
+  });
+  return result;
 }

@@ -3,19 +3,15 @@ import { redirect } from "next/navigation";
 import {
   getVisitorCounts,
   getTrafficSources,
-  getTopPages,
   getDeviceBreakdown,
-  getTopCities,
-  getPeakHours,
-  getBounceRate,
+  getAvgSessionDuration,
+  getNewVsReturning,
 } from "@/lib/ga4";
 import { getLeadCount } from "@/lib/sheets";
 import MetricCard from "./components/MetricCard";
 import TrafficSources from "./components/TrafficSources";
-import TopPages from "./components/TopPages";
 import DeviceBreakdown from "./components/DeviceBreakdown";
-import CityList from "./components/CityList";
-import PeakHours from "./components/PeakHours";
+import NewVsReturning from "./components/NewVsReturning";
 import SignOutButton from "./components/SignOutButton";
 
 export const revalidate = 300;
@@ -24,18 +20,21 @@ export default async function AdminDashboard() {
   const session = await auth();
   if (!session) redirect("/admin/login");
 
-  let visitors, sources, pages, devices, cities, hours, bounceRate, leadCount;
+  let visitors,
+    sources,
+    devices,
+    avgDuration,
+    newVsReturning,
+    leadCount;
 
   try {
-    [visitors, sources, pages, devices, cities, hours, bounceRate, leadCount] =
+    [visitors, sources, devices, avgDuration, newVsReturning, leadCount] =
       await Promise.all([
         getVisitorCounts(),
         getTrafficSources(),
-        getTopPages(),
         getDeviceBreakdown(),
-        getTopCities(),
-        getPeakHours(),
-        getBounceRate(),
+        getAvgSessionDuration(),
+        getNewVsReturning(),
         getLeadCount(),
       ]);
   } catch {
@@ -48,14 +47,17 @@ export default async function AdminDashboard() {
         <div className="bg-[#141210] border border-red-500/20 rounded-xl p-8 text-center">
           <p className="text-red-400 mb-2">Erro ao carregar métricas</p>
           <p className="text-nude-dark text-sm">
-            Verifique se as variáveis de ambiente do Google Cloud estão
-            configuradas (GA_PROPERTY_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL,
-            GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY).
+            Verifique as configurações do Google Cloud ou faça login novamente.
           </p>
         </div>
       </div>
     );
   }
+
+  const totalVisitors30d = visitors.find((v) => v.label === "30 dias")?.value || 1;
+  const conversionRate = leadCount > 0
+    ? ((leadCount / totalVisitors30d) * 100).toFixed(1)
+    : "0";
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -69,28 +71,32 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         {visitors.map((v) => (
-          <MetricCard key={v.label} label={v.label} value={v.value} />
+          <MetricCard key={v.label} label={v.label} value={v.value} sublabel="visitantes" />
         ))}
         <MetricCard label="Leads" value={leadCount} sublabel="Total na planilha" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <TrafficSources data={sources} />
-        <TopPages data={pages} />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <DeviceBreakdown data={devices} />
-        <CityList data={cities} />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+        <MetricCard
+          label="Tempo Médio"
+          value={avgDuration}
+          sublabel="Por visita (30 dias)"
+        />
+        <MetricCard
+          label="Conversão"
+          value={`${conversionRate}%`}
+          sublabel="Visitantes → Leads"
+        />
+        <MetricCard
+          label="Dispositivo Principal"
+          value={devices[0]?.device === "mobile" ? "Celular" : "Desktop"}
+          sublabel={`${Math.round((devices[0]?.sessions / devices.reduce((s, d) => s + d.sessions, 0) || 1) * 100)}% dos acessos`}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PeakHours data={hours} />
-        <MetricCard
-          label="Taxa de Rejeição"
-          value={`${bounceRate}%`}
-          sublabel="Últimos 30 dias"
-        />
+        <TrafficSources data={sources} />
+        <NewVsReturning data={newVsReturning} />
       </div>
     </div>
   );
